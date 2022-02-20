@@ -18,14 +18,38 @@ headers = {"Authorization": authorize_token}
 
 def getBalance():
     res = requests.get('https://api.upbit.com/v1/accounts', headers=headers)
-    print(res.json())
+    return res.json()
 
 def getInfo(ticker_list):
     url = "https://api.upbit.com/v1/ticker?markets=" + ticker_list
     res = requests.request("GET", url, headers=headers)
-    print(res.text)
+    return res.json()
 
+def getUpbitItem():
+    url = "https://api.upbit.com/v1/market/all"
+    res = requests.request("GET", url, headers=headers)
+    return res.json()
 
+def getTicker():
+    ret = getUpbitItem()
+    tickerList = []
+    for item in ret:
+        tickerList.append(item["market"])
+    return tickerList
+
+def getAllInfo():
+    tickerList = getTicker()
+    str_ticker = ','.join(tickerList)
+    ret = getInfo(str_ticker)
+    return ret
+
+def getAllPrice():
+    infoList = getAllInfo()
+    ret = {}
+    for item in infoList:
+        ret[item["market"]] = item["trade_price"]
+    return ret
+    
 if __name__ == "__main__":
-    getBalance()
-    getInfo("KRW-BTC,BTC-ETH")
+#    print(getAllInfo())
+    print(getAllPrice()) 
