@@ -27,7 +27,7 @@ def getBalanceKRW():
     for ticker in balance:
         if (ticker['currency'] == 'KRW'):
             ret = ticker['balance']        
-    return ret
+    return float(ret)
 
 def getInfo(ticker_list):
     url = "https://api.upbit.com/v1/ticker?markets=" + ticker_list
@@ -125,5 +125,5 @@ def sellMarketPrice(market, volume):
 
 if __name__ == "__main__":
 #    print(buyMarketPrice('KRW-BTC', 10000))
-    print(sellMarketPrice('KRW-BTC', None))
-    #print(getBalance())
+#    print(sellMarketPrice('KRW-BTC', None))
+    print(getBalanceKRW())
