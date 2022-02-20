@@ -34,14 +34,14 @@ def checkSell():
             print("error : no item!" , market)
 
 # 자동매매 시작
-getBalance()
+print(getBalance())
 dic = getAllPrice()
 preDic = dic
+print(getBalanceKRW())
 while True:
     try:
         #pre work
         dic = getAllPrice()
-        #print(dic)
 
         #check buy&sell
         checkBuy()
