@@ -50,7 +50,6 @@ def getBalanceKRW():
     res = requests.get('https://api.upbit.com/v1/accounts', headers=headers)
     balance = res.json()
     ret = -1
-    print("balance", balance)
     for ticker in balance:
         if (ticker['currency'] == 'KRW'):
             ret = ticker['balance']        
@@ -98,9 +97,9 @@ def buyMarketPrice(market, price):
     }
 
     getTokenQuery(query)
-    print("매수주문", market, "매수금액:", price)
     res = requests.post("https://api.upbit.com/v1/orders", params=query, headers=headers)
-    return res.json()
+    print("매수주문", market, " / 매수금액:", price, " / code", res.status_code)
+    return res
 
 def sellMarketPrice(market, volume):
     #volume == None 일 때 잔고 전체로 설정
@@ -123,18 +122,20 @@ def sellMarketPrice(market, volume):
         }
         
         getTokenQuery(query)
-        print("매도주문", market, "갯수", volume)
         res = requests.post("https://api.upbit.com/v1/orders", params=query, headers=headers)
-        return res.json()
+        print("매도주문", market, " / 갯수", volume, " / code", res.status_code)
+        return res
+    else:
+        return None
         
 def sellAll():
     balance_list = getBalance()
     for item in balance_list:
         market = item['unit_currency'] + '-' + item['currency']
         sellMarketPrice(market,None)
-        
+
 if __name__ == "__main__":
-    print(getBalanceKRW())
-#    print(buyMarketPrice('KRW-BTC', 10000))
+#    print(getBalanceKRW())
+#    print(buyMarketPrice('KRW-BTC', 5000))
 #    print(sellMarketPrice('KRW-BTC', None))
-#    sellAll()
+    sellAll()

@@ -3,9 +3,6 @@ import pyupbit
 import datetime
 from restAPI import getBalance,getBalanceKRW,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice
 
-preDic = {}
-dic = {}
-
 def checkBuy():
     print("checkBuy")
     for market in dic:
@@ -13,10 +10,9 @@ def checkBuy():
             prePrice = preDic[market]
             price = dic[market]
             change = ((price-prePrice)/price)*100 
-#            print("check! (market:" , market ,", " , prePrice , "->" , price , " " , change , ")")
             if ( change > 0.5 ):
+                ret = buyMarketPrice(market, getBalanceKRW()/10)   #잔액의 일부로 시장가 매수
                 print("buy! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
-                buyMarketPrice(market, getBalanceKRW()/2)   #잔액의 절반액수로 시장가 매수
         else:
             print("new market!" , market)
 
@@ -27,9 +23,10 @@ def checkSell():
             prePrice = preDic[market]
             price = dic[market]
             change = ((price-prePrice)/price)*100 
-            if ( change < -0.5 ):
-                print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
-                sellMarketPrice(market, None)   #전량 시장가 매도
+            if ( change < -0.2 ):
+                ret = sellMarketPrice(market, None)   #전량 시장가 매도
+                if (ret != None):
+                    print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
         else:
             print("error : no item!" , market)
 
@@ -37,7 +34,7 @@ def checkSell():
 print(getBalance())
 dic = getAllPrice()
 preDic = dic
-print(getBalanceKRW())
+
 while True:
     try:
         #pre work
