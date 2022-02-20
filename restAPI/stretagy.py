@@ -16,18 +16,26 @@ def checkBuyCondition():
             print("new market!" , market)
 
 def checkSellCondition():
+    #잔고 list
+    balance_list = getBalance()
+    balance_market_list = []
+    for item in balance_list:
+        market = item['unit_currency'] + '-' + item['currency']
+        balance_market_list.append(market)
+
     for market in dic:
         if market in preDic:
-            prePrice = preDic[market]
-            price = dic[market]
-            change = ((price-prePrice)/price)*100 
-            if ( change < -2 ):
-                ret = sellMarketPrice(market, None)   #전량 시장가 매도
-                if (ret != None):
-                    print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
+            if market in balance_market_list:
+                prePrice = preDic[market]
+                price = dic[market]
+                change = ((price-prePrice)/price)*100 
+                if ( change < -2 ):
+                    ret = sellMarketPrice(market, None)   #전량 시장가 매도
+                    if (ret != None):
+                        print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
         else:
             print("error : no item!" , market)
-
+        
 # 자동매매 시작
 print("잔고 :", getBalance())
 dic = getAllPrice()
