@@ -1,35 +1,37 @@
 import time
 import pyupbit
 import datetime
-from restAPI import getBalance,getInfo,getAllInfo,getAllPrice
+from restAPI import getBalance,getBalanceKRW,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice
 
 preDic = {}
 dic = {}
 
 def checkBuy():
     print("checkBuy")
-    for ticker in dic:
-        if ticker in preDic:
-            prePrice = preDic[ticker]
-            price = dic[ticker]
-            change = (price-prePrice)/price 
-#            print("check! (ticker:" , ticker ,", " , prePrice , "->" , price , " " , change , ")")
-            if ( change > 0.001 ):
-                print("buy! (ticker:" , ticker ,", " , prePrice , "->" , price , " " , change , ")")
+    for market in dic:
+        if market in preDic:
+            prePrice = preDic[market]
+            price = dic[market]
+            change = ((price-prePrice)/price)*100 
+#            print("check! (market:" , market ,", " , prePrice , "->" , price , " " , change , ")")
+            if ( change > 0.5 ):
+                print("buy! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
+                buyMarketPrice(market, getBalanceKRW()/2)   #잔액의 절반액수로 시장가 매수
         else:
-            print("new ticker!" , ticker)
+            print("new market!" , market)
 
 def checkSell():
     print("checkSell")
-    for ticker in dic:
-        if ticker in preDic:
-            prePrice = preDic[ticker]
-            price = dic[ticker]
-            change = (price-prePrice)/price 
-            if ( change < -0.001 ):
-                print("sell! (ticker:" , ticker ,", " , prePrice , "->" , price , " " , change , ")")
+    for market in dic:
+        if market in preDic:
+            prePrice = preDic[market]
+            price = dic[market]
+            change = ((price-prePrice)/price)*100 
+            if ( change < -0.5 ):
+                print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
+                sellMarketPrice(market, None)   #전량 시장가 매도
         else:
-            print("error : no item!" , ticker)
+            print("error : no item!" , market)
 
 # 자동매매 시작
 getBalance()
