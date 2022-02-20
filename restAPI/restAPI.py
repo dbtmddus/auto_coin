@@ -20,6 +20,15 @@ def getBalance():
     res = requests.get('https://api.upbit.com/v1/accounts', headers=headers)
     return res.json()
 
+def getBalanceKRW():
+    res = requests.get('https://api.upbit.com/v1/accounts', headers=headers)
+    balance = res.json()
+    ret = -1
+    for ticker in balance:
+        if (ticker['currency'] == 'KRW'):
+            ret = ticker['balance']        
+    return ret
+
 def getInfo(ticker_list):
     url = "https://api.upbit.com/v1/ticker?markets=" + ticker_list
     res = requests.request("GET", url, headers=headers)
