@@ -20,10 +20,12 @@ def getBalance():
     res = requests.get('https://api.upbit.com/v1/accounts', headers=headers)
     print(res.json())
 
-def getInfo(ticker):
-    url = "https://api.upbit.com/v1/ticker?markets=KRW-BTC%2C%20" + ticker
+def getInfo(ticker_list):
+    url = "https://api.upbit.com/v1/ticker?markets=" + ticker_list
     res = requests.request("GET", url, headers=headers)
     print(res.text)
 
-getBalance()
-getInfo("BTC-ETH")
+
+if __name__ == "__main__":
+    getBalance()
+    getInfo("KRW-BTC,BTC-ETH")
