@@ -127,6 +127,12 @@ def sellMarketPrice(market, volume):
         res = requests.post("https://api.upbit.com/v1/orders", params=query, headers=headers)
         return res.json()
         
+def sellAll():
+    balance_list = getBalance()
+    for item in balance_list:
+        market = item['unit_currency'] + '-' + item['currency']
+        sellMarketPrice(market,None)
+        
 if __name__ == "__main__":
     print(getBalanceKRW())
 #    print(buyMarketPrice('KRW-BTC', 10000))
