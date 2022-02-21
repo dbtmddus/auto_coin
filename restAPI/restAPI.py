@@ -3,6 +3,7 @@ import uuid
 import hashlib
 from urllib.parse import urlencode
 import requests
+import inspect
 
 access_key = 'kZEmXq2ZhtYtifIxGuJquVxASfvvJv88sJwXQJxD'
 secret_key = 'wHumZzesU4S9PU6AhaDdPhZVuNMjmmcQa4bqCTmf'
@@ -150,20 +151,25 @@ def sellAll_BTC_USDT():
 def getAskBidBalance(market): #호가
     url = "https://api.upbit.com/v1/orderbook?markets="+market
     headers = {"Accept": "application/json"}
-    response = requests.request("GET", url, headers=headers)
-
-    return response
+    res = requests.request("GET", url, headers=headers)
+    if ( res.status_code >= 400 ):
+        print (inspect.stack()[0][3], 'error', res.status_code)
+    return res
 
 def getOneTick(market):
     orderBook = getAskBidBalance(market)
-    orderList = orderBook.json()[0]['orderbook_units']
-    buyPrice = orderList[0]['ask_price']
-    sellPrice = orderList[0]['bid_price']
-    price = {}
-    price['buyPrice'] = buyPrice
-    price['sellPrice'] = sellPrice
-    gap = buyPrice - sellPrice
-    return gap
+    try:
+        orderList = orderBook.json()[0]['orderbook_units']
+        buyPrice = orderList[0]['ask_price']
+        sellPrice = orderList[0]['bid_price']
+        price = {}
+        price['buyPrice'] = buyPrice
+        price['sellPrice'] = sellPrice
+        gap = (buyPrice - sellPrice)
+    except Exception as e:
+        print(inspect.stack()[0][3], "market:", market, 'error msg:', e)
+        gap = 999999999999999
+    return float(gap)
 
 if __name__ == "__main__":
 #    print(getBalanceKRW())

@@ -5,6 +5,7 @@ from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,bu
 
 def getAmount(market): # 매수 1회 금액
     unit = market.split('-')[0]
+    print(getBalance_unit('KRW')/3)
     return getBalance_unit('KRW')/3
 
 def checkBuyCondition():
@@ -12,10 +13,12 @@ def checkBuyCondition():
         if market in preDic:
             prePrice = preDic[market]
             price = dic[market]
-            change = ((price-prePrice)/price)*100 
-            if ( change > 4 ) and ( (price-prePrice) > getOneTick(market) ):
-                ret = buyMarketPrice(market, getAmount())   #잔액의 일부로 시장가 매수
-                print("buy! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
+            change = ((price-prePrice)/price)*100
+            if change > 4:
+                oneTick = getOneTick(market)
+                if (price-prePrice) > oneTick:
+                    ret = buyMarketPrice(market, getAmount())   #잔액의 일부로 시장가 매수
+                    print("buy! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%", "oneTick:", "%.20f" %oneTick, ")" )
         else:
             print("new market!" , market)
 
