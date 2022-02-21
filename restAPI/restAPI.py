@@ -45,13 +45,13 @@ def getBalance():
     res = requests.get('https://api.upbit.com/v1/accounts', headers=headers)
     return res.json()
 
-def getBalanceKRW():
+def getBalance_unit(unit):
     getToken()
     res = requests.get('https://api.upbit.com/v1/accounts', headers=headers)
     balance = res.json()
     ret = -1
     for ticker in balance:
-        if (ticker['currency'] == 'KRW'):
+        if (ticker['currency'] == unit):
             ret = ticker['balance']        
     return float(ret)
 
@@ -162,7 +162,8 @@ def getOneTick(market):
     price = {}
     price['buyPrice'] = buyPrice
     price['sellPrice'] = sellPrice
-    return price
+    gap = buyPrice - sellPrice
+    return gap
 
 if __name__ == "__main__":
 #    print(getBalanceKRW())

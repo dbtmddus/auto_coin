@@ -1,7 +1,11 @@
 import time
 import pyupbit
 import datetime
-from restAPI import getBalance,getBalanceKRW,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice
+from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick
+
+def getAmount(market): # 매수 1회 금액
+    unit = market.split('-')[0]
+    return getBalance_unit('KRW')/3
 
 def checkBuyCondition():
     for market in dic:
@@ -9,8 +13,8 @@ def checkBuyCondition():
             prePrice = preDic[market]
             price = dic[market]
             change = ((price-prePrice)/price)*100 
-            if ( change > 7 ):
-                ret = buyMarketPrice(market, getBalanceKRW()/2)   #잔액의 일부로 시장가 매수
+            if ( change > 4 ) and ( (price-prePrice) > getOneTick(market) ):
+                ret = buyMarketPrice(market, getAmount())   #잔액의 일부로 시장가 매수
                 print("buy! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
         else:
             print("new market!" , market)
@@ -29,7 +33,7 @@ def checkSellCondition():
                 prePrice = preDic[market]
                 price = dic[market]
                 change = ((price-prePrice)/price)*100 
-                if ( change < -2 ):
+                if ( change < -1 ):
                     ret = sellMarketPrice(market, None)   #전량 시장가 매도
                     if (ret != None):
                         print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
