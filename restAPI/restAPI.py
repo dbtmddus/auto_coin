@@ -147,8 +147,27 @@ def sellAll_BTC_USDT():
             market = item['unit_currency'] + '-' + item['currency']
             sellMarketPrice(market,None)
 
+def getAskBidBalance(market): #호가
+    url = "https://api.upbit.com/v1/orderbook?markets="+market
+    headers = {"Accept": "application/json"}
+    response = requests.request("GET", url, headers=headers)
+
+    return response
+
+def getOneTick(market):
+    orderBook = getAskBidBalance(market)
+    orderList = orderBook.json()[0]['orderbook_units']
+    buyPrice = orderList[0]['ask_price']
+    sellPrice = orderList[0]['bid_price']
+    price = {}
+    price['buyPrice'] = buyPrice
+    price['sellPrice'] = sellPrice
+    return price
+
 if __name__ == "__main__":
 #    print(getBalanceKRW())
-    print(buyMarketPrice('BTC-OBSR', 0.0006))
+#    print(buyMarketPrice('BTC-OBSR', 0.0006))
 #    print(sellMarketPrice('KRW-BTC', None))
 #    sellAll()
+    price = getOneTick('KRW-BTC')
+    print( price['buyPrice'], price['sellPrice'] )
