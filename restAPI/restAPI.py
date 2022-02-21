@@ -99,9 +99,12 @@ def buyMarketPrice(market, price):
     getTokenQuery(query)
     res = requests.post("https://api.upbit.com/v1/orders", params=query, headers=headers)
     print("매수주문", market, " / 매수금액:", price, " / code", res.status_code)
+    if ( res.status_code >= 400 ):
+        print (res.json())
     return res
 
 def sellMarketPrice(market, volume):
+    print("sellMarketPrice",market,volume)
     #volume == None 일 때 잔고 전체로 설정
     balance_volume = 0
     ticker = market.split('-')[1]
@@ -124,6 +127,8 @@ def sellMarketPrice(market, volume):
         getTokenQuery(query)
         res = requests.post("https://api.upbit.com/v1/orders", params=query, headers=headers)
         print("매도주문", market, " / 갯수", volume, " / code", res.status_code)
+        if ( res.status_code >= 400 ):
+            print (res.json())
         return res
     else:
         return None
@@ -131,11 +136,19 @@ def sellMarketPrice(market, volume):
 def sellAll():
     balance_list = getBalance()
     for item in balance_list:
-        market = item['unit_currency'] + '-' + item['currency']
-        sellMarketPrice(market,None)
+        if (item['currency'] != 'KRW') and (item['currency'] != 'BTC') and (item['currency'] != 'USDT'):
+            market = item['unit_currency'] + '-' + item['currency']
+            sellMarketPrice(market,None)
+
+def sellAll_BTC_USDT():
+    balance_list = getBalance()
+    for item in balance_list:
+        if item['currency'] != 'KRW' :
+            market = item['unit_currency'] + '-' + item['currency']
+            sellMarketPrice(market,None)
 
 if __name__ == "__main__":
 #    print(getBalanceKRW())
-#    print(buyMarketPrice('KRW-BTC', 5000))
+    print(buyMarketPrice('BTC-OBSR', 0.0006))
 #    print(sellMarketPrice('KRW-BTC', None))
-    sellAll()
+#    sellAll()
