@@ -3,22 +3,19 @@ import pyupbit
 import datetime
 from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick
 
-def getAmount(market): # 매수 1회 금액
-    unit = market.split('-')[0]
-    print(getBalance_unit('KRW')/3)
-    return getBalance_unit('KRW')/3
-
 def checkBuyCondition():
     for market in dic:
         if market in preDic:
             prePrice = preDic[market]
             price = dic[market]
-            change = ((price-prePrice)/price)*100
-            if change > 4:
+            diff = ((price-prePrice)/price)*100
+            unit = market.split('-')[0] 
+            if diff > 4:
+                amount  = getBalance_unit(unit) #매수금액
                 oneTick = getOneTick(market)
                 if (price-prePrice) > oneTick:
-                    ret = buyMarketPrice(market, getAmount())   #잔액의 일부로 시장가 매수
-                    print("buy! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%", "oneTick:", "%.20f" %oneTick, ")" )
+                    ret = buyMarketPrice(market, amount)   #잔액의 일부로 시장가 매수
+                    print("buy! (market:" , market ,", " , prePrice , "->" , price , " " , diff , "%", "oneTick:", "%.20f" %oneTick, "amount:", amount, ")" )
         else:
             print("new market!" , market)
 
@@ -33,13 +30,14 @@ def checkSellCondition():
     for market in dic:
         if market in preDic:
             if market in balance_market_list:
-                prePrice = preDic[market]
-                price = dic[market]
-                change = ((price-prePrice)/price)*100 
-                if ( change < -1 ):
-                    ret = sellMarketPrice(market, None)   #전량 시장가 매도
-                    if (ret != None):
-                        print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , change , "%)")
+                if (market != 'KRW-BTC') and (market != 'BTC-USDT'):
+                    prePrice = preDic[market]
+                    price = dic[market]
+                    diff = ((price-prePrice)/price)*100 
+                    if ( diff < -0.01 ):
+                        ret = sellMarketPrice(market, None)   #전량 시장가 매도
+                        if (ret != None):
+                            print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , diff , "%)")
         else:
             print("error : no item!" , market)
         
