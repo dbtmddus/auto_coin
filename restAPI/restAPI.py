@@ -9,6 +9,7 @@ access_key = 'kZEmXq2ZhtYtifIxGuJquVxASfvvJv88sJwXQJxD'
 secret_key = 'wHumZzesU4S9PU6AhaDdPhZVuNMjmmcQa4bqCTmf'
 
 payload,jwt_token,authorize_token,headers = 0,0,0,0
+units = ['BTC', 'KRW', 'USDT']
 
 def getToken():
     global payload,jwt_token,authorize_token,headers
@@ -138,15 +139,17 @@ def sellAll():
     balance_list = getBalance()
     for item in balance_list:
         if (item['currency'] != 'KRW') and (item['currency'] != 'BTC') and (item['currency'] != 'USDT'):
-            market = item['unit_currency'] + '-' + item['currency']
-            sellMarketPrice(market,None)
+            for unit in units:
+                market = unit + '-' + item['currency']
+                sellMarketPrice(market,None)
 
 def sellAll_BTC_USDT():
     balance_list = getBalance()
     for item in balance_list:
         if item['currency'] != 'KRW' :
-            market = item['unit_currency'] + '-' + item['currency']
-            sellMarketPrice(market,None)
+            for unit in units:
+                market = unit + '-' + item['currency']
+                sellMarketPrice(market,None)
 
 def getAskBidBalance(market): #호가
     url = "https://api.upbit.com/v1/orderbook?markets="+market
@@ -172,9 +175,4 @@ def getOneTick(market):
     return float(gap)
 
 if __name__ == "__main__":
-#    print(getBalanceKRW())
-#    print(buyMarketPrice('BTC-OBSR', 0.0006))
-#    print(sellMarketPrice('KRW-BTC', None))
-#    sellAll()
-    price = getOneTick('KRW-BTC')
-    print( price['buyPrice'], price['sellPrice'] )
+    sellAll()

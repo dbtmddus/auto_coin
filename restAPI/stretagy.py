@@ -3,6 +3,8 @@ import pyupbit
 import datetime
 from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick
 
+units = ['BTC', 'KRW', 'USDT']
+
 # 자동매매 시작
 print("잔고 :", getBalance())
 dic = getAllPrice()
@@ -23,8 +25,6 @@ def checkBuyCondition():
                     print("buy! (market:" , market ,", " , prePrice , "->" , price , " " , diff , "%", "oneTick:", "%.20f" %oneTick, unit, "amount:", amount, ")" )
         else:
             print("new market!" , market)
-
-units = ['BTC', 'KRW', 'USDT']
 
 def getBalance_market():
     balance_list = getBalance()
