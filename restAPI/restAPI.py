@@ -160,18 +160,14 @@ def getAskBidBalance(market): #호가
     return res
 
 def getOneTick(market):
+    gap = 9999999999
     orderBook = getAskBidBalance(market)
     try:
         orderList = orderBook.json()[0]['orderbook_units']
-        buyPrice = orderList[0]['ask_price']
-        sellPrice = orderList[0]['bid_price']
-        price = {}
-        price['buyPrice'] = buyPrice
-        price['sellPrice'] = sellPrice
-        gap = (buyPrice - sellPrice)
+        for item in orderList:
+            gap = min(gap, item['ask_price'] - item['bid_price'])
     except Exception as e:
         print(inspect.stack()[0][3], "market:", market, 'error msg:', e)
-        gap = 999999999999999
     return float(gap)
 
 if __name__ == "__main__":
