@@ -170,5 +170,12 @@ def getOneTick(market):
         print(inspect.stack()[0][3], "market:", market, 'error msg:', e)
     return float(gap)
 
+def getCandle(market, min, count):
+    url = "https://api.upbit.com/v1/candles/minutes/"+min+"?market="+market+"&count="+ count
+    headers = {"Accept": "application/json"}
+    res = requests.request("GET", url, headers=headers)
+    return res
+    
 if __name__ == "__main__":
-    sellAll()
+    #sellAll()
+    print(getCandle('KRW-BTC', '1', '10').json())
