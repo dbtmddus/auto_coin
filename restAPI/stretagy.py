@@ -1,7 +1,7 @@
 import time
 import pyupbit
 import datetime
-from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick
+from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick,getCandleDay
 
 units = ['BTC', 'KRW', 'USDT']
 
@@ -10,7 +10,7 @@ print("잔고 :", getBalance())
 dic = getAllPrice()
 preDic = dic
 
-def checkBuyCondition():
+def strategy1_soaringBuy():
     for market in dic:
         if market in preDic:
             prePrice = preDic[market]
@@ -43,7 +43,7 @@ def getBalance_market():
                     break
     return market_list
 
-def checkSellCondition():
+def strategy1_soaringSell():
     market_list = getBalance_market()
 
     for market in market_list:
@@ -57,14 +57,36 @@ def checkSellCondition():
                 ret = sellMarketPrice(market, None)   #전량 시장가 매도
                 if (ret != None):
                     print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , diff , "%)")
+                    
+def strategy2_VolatilityBreakout():
+    t = datetime.datetime.now()
+    if (t.hour == 0) and (t.minute == 0):   # Sell
+        sellAll_BTC_USDT()
+
+    else :  #Buy
+        market = 'KRW-BTC'
+        k = 0.2
+
+        candleInfo = getCandleDay(market, '2').json()
+        today = candleInfo[0]
+        yesterday = candleInfo[-1]
+
+        range = (float(yesterday['high_price']) - float(yesterday['low_price'])) * k
+        targetPrice = today['opening_price'] + range
+        price = dic[market]
+
+        print("buy check.. (market:" , market ,", current price:" , price , ", k:" , k, "target price:", targetPrice)
+        if (price >= targetPrice):
+            amount  = getBalance_unit('KRW')/3 #매수금액
+            ret = buyMarketPrice(market, amount)   #시장가 매수
+            print("buy! (market:" , market ,", current price:" , price , ", k:" , k, "target price:", targetPrice)
+
 while True:
     try:
         #pre work
         dic = getAllPrice()
 
-        #check buy&sell
-        checkBuyCondition()
-        checkSellCondition()
+        strategy2_VolatilityBreakout()
 
         #finish work
         preDic = dic
