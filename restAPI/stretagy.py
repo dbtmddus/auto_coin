@@ -2,6 +2,7 @@ import time
 import pyupbit
 import datetime
 from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick,getCandleDay
+from backtesting import getBestK
 
 units = ['BTC', 'KRW', 'USDT']
 
@@ -62,24 +63,25 @@ def strategy2_VolatilityBreakout():
     t = datetime.datetime.now()
     if (t.hour == 0) and (t.minute == 0):   # Sell
         sellAll_BTC_USDT()
-
-    else :  #Buy
+        time.sleep(60)
+        strategy2_VolatilityBreakout.k = getBestK()
+    else :                                  #Buy
         market = 'KRW-BTC'
-        k = 0.2
-
+        
         candleInfo = getCandleDay(market, '2').json()
         today = candleInfo[0]
         yesterday = candleInfo[-1]
 
-        range = (float(yesterday['high_price']) - float(yesterday['low_price'])) * k
+        range = (float(yesterday['high_price']) - float(yesterday['low_price'])) * strategy2_VolatilityBreakout.k
         targetPrice = today['opening_price'] + range
         price = dic[market]
 
-        print("buy check.. (market:" , market ,", current price:" , price , ", k:" , k, "target price:", targetPrice)
+        print("buy check.. (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
         if (price >= targetPrice):
             amount  = getBalance_unit('KRW')/3 #매수금액
             ret = buyMarketPrice(market, amount)   #시장가 매수
-            print("buy! (market:" , market ,", current price:" , price , ", k:" , k, "target price:", targetPrice)
+            print("buy! (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
+strategy2_VolatilityBreakout.k  = getBestK()
 
 while True:
     try:
