@@ -5,6 +5,7 @@ from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,bu
 from backtesting import getBestK
 import pandas as pd
 from fbprophet import Prophet
+import schedule
 
 units = ['BTC', 'KRW', 'USDT']
 
@@ -80,9 +81,14 @@ def strategy2_VolatilityBreakout():
 
 #        print("buy check.. (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
         if (price >= targetPrice):
-            amount  = getBalance_unit('KRW')/3 #매수금액
-            ret = buyMarketPrice(market, amount)   #시장가 매수
-            print("buy! (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
+            if (predicted_close_price > price):
+                amount  = getBalance_unit('KRW')/3 #매수금액
+                ret = buyMarketPrice(market, amount)   #시장가 매수
+                print("buy! (market:" , market ,", current price:" , price 
+                    , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice
+                    , ", predicted:", predicted_close_price)
+            else:
+                print("예상 종가가 현재가보다 낮음, 매수x ", predicted_close_price, "<=", price)
 strategy2_VolatilityBreakout.k  = getBestK()
 
 predicted_close_price = 0
@@ -115,12 +121,14 @@ def predict_price(ticker):
     predicted_close_price = closeValue
 predict_price("KRW-BTC")
 print ('predict : ', predicted_close_price)
+schedule.every().hour.do(lambda: predict_price("KRW-BTC"))
 
 while True:
     try:
         #pre work
         dic = getAllPrice()
-
+        schedule.run_pending()
+        
         strategy2_VolatilityBreakout()
 
         #finish work
