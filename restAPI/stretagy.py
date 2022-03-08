@@ -1,8 +1,10 @@
 import time
 import pyupbit
 import datetime
-from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick,getCandleDay
+from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick,getCandleDay,getCandleMin
 from backtesting import getBestK
+import pandas as pd
+from fbprophet import Prophet
 
 units = ['BTC', 'KRW', 'USDT']
 
@@ -61,7 +63,7 @@ def strategy1_soaringSell():
                     
 def strategy2_VolatilityBreakout():
     t = datetime.datetime.now()
-    if (t.hour == 0) and (t.minute == 0):   # Sell
+    if (t.hour == 9) and (t.minute == 0):   # Sell
         sellAll_BTC_USDT()
         time.sleep(60)
         strategy2_VolatilityBreakout.k = getBestK()
@@ -76,12 +78,43 @@ def strategy2_VolatilityBreakout():
         targetPrice = today['opening_price'] + range
         price = dic[market]
 
-        print("buy check.. (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
+#        print("buy check.. (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
         if (price >= targetPrice):
             amount  = getBalance_unit('KRW')/3 #매수금액
             ret = buyMarketPrice(market, amount)   #시장가 매수
             print("buy! (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
 strategy2_VolatilityBreakout.k  = getBestK()
+
+predicted_close_price = 0
+def predict_price(ticker):
+    """Prophet으로 당일 종가 가격 예측"""
+    global predicted_close_price
+    learningSize = '200'
+    json = getCandleMin("KRW-BTC", '60', learningSize).json()
+    json.reverse()
+    for item in json:
+        item['candle_date_time_kst'] = pd.Timestamp(item['candle_date_time_kst'])
+
+    temp_df = pd.DataFrame(json)
+    df = pd.DataFrame()
+    df['index'] = temp_df['candle_date_time_kst']
+    df['trade_price'] = temp_df['trade_price']
+    df['ds'] = df['index']
+    df['y'] = df['trade_price']
+    data = df[['ds','y']]
+
+#    print ('data:', data)
+    model = Prophet()
+    model.fit(data)
+    future = model.make_future_dataframe(periods=24, freq='H')
+    forecast = model.predict(future)
+    closeDf = forecast[forecast['ds'] == forecast.iloc[-1]['ds'].replace(hour=9)]
+    if len(closeDf) == 0:
+        closeDf = forecast[forecast['ds'] == data.iloc[-1]['ds'].replace(hour=9)]
+    closeValue = closeDf['yhat'].values[0]
+    predicted_close_price = closeValue
+predict_price("KRW-BTC")
+print ('predict : ', predicted_close_price)
 
 while True:
     try:
