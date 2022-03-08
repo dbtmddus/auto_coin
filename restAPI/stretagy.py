@@ -83,10 +83,11 @@ def strategy2_VolatilityBreakout():
         if (price >= targetPrice):
             if (predicted_close_price > price):
                 amount  = getBalance_unit('KRW')/3 #매수금액
-                ret = buyMarketPrice(market, amount)   #시장가 매수
-                print("buy! (market:" , market ,", current price:" , price 
-                    , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice
-                    , ", predicted:", predicted_close_price)
+                if (amount > 10000):
+                    ret = buyMarketPrice(market, amount)   #시장가 매수
+                    print("buy! (market:" , market ,", current price:" , price 
+                        , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice
+                        , ", predicted:", predicted_close_price)
             else:
                 print("예상 종가가 현재가보다 낮음, 매수x ", predicted_close_price, "<=", price)
 strategy2_VolatilityBreakout.k  = getBestK()
@@ -119,16 +120,16 @@ def predict_price(ticker):
         closeDf = forecast[forecast['ds'] == data.iloc[-1]['ds'].replace(hour=9)]
     closeValue = closeDf['yhat'].values[0]
     predicted_close_price = closeValue
+    print ('predict : ', predicted_close_price)
 predict_price("KRW-BTC")
-print ('predict : ', predicted_close_price)
-schedule.every().hour.do(lambda: predict_price("KRW-BTC"))
+schedule.every(10).minutes.do(lambda: predict_price("KRW-BTC"))
 
 while True:
     try:
         #pre work
         dic = getAllPrice()
         schedule.run_pending()
-        
+
         strategy2_VolatilityBreakout()
 
         #finish work
