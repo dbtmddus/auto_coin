@@ -12,8 +12,9 @@ while True:
         st.dic = st.getAllPrice()
         schedule.run_pending()
 
-        st.strategy1_Soaring()
-        #st.strategy2_VolatilityBreakout()
+        #select stretagy
+        #st.strategy1_Soaring()
+        st.strategy2_VolatilityBreakout()
 
         #finish work
         st.preDic = st.dic

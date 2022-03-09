@@ -10,12 +10,6 @@ units = ['BTC', 'KRW', 'USDT']
 dic = getAllPrice()
 preDic = dic
 
-def refreshDir():
-    dic = getAllPrice()
-
-def refreshPreDir():
-    preDic = dic
-    
 def getBalance_market():
     balance_list = getBalance()
     market_list = []
@@ -102,6 +96,7 @@ def strategy1_Soaring():
 def strategy2_VolatilityBreakout():
     t = datetime.datetime.now()
     if (t.hour == 9) and (t.minute == 0):   # Sell
+        print ('Sell all.  time:', t.hour, "/", t.minute)
         sellAll_BTC_USDT()
         time.sleep(60)
         strategy2_VolatilityBreakout.k = getBestK()
@@ -116,7 +111,7 @@ def strategy2_VolatilityBreakout():
         targetPrice = today['opening_price'] + range
         price = dic[market]
 
-        print("buy check.. (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
+        #print("buy check.. (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
         if (price >= targetPrice):
             if (predicted_close_price > price):
                 amount  = getBalance_unit('KRW')/3 #매수금액
@@ -125,7 +120,5 @@ def strategy2_VolatilityBreakout():
                     print("buy! (market:" , market ,", current price:" , price 
                         , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice
                         , ", predicted:", predicted_close_price)
-            else:
-                print("예상 종가가 현재가보다 낮음, 매수x ", predicted_close_price, "<=", price)
 strategy2_VolatilityBreakout.k  = getBestK()
 
