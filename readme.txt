@@ -1,3 +1,13 @@
+구조 설명
+- /src 디렉토리 : 실제 동작 코드
+restAPI.py : 업비트를 통해 data를 주고 받는 기능 구현
+stretagy.py : 매수&매도 조건 전략 구현
+backtesting.py : 과거 data기반으로 전략 보정
+main.py : 실제 실행 모듈
+
+- /etc 디렉토리 : 동작과 무관한 개인용 참고 코드
+
+
 환경설정
 
 4GB이상 RAM 필요 (AWS t2.medium 이상)

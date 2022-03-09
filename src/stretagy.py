@@ -114,11 +114,11 @@ def strategy2_VolatilityBreakout():
         #print("buy check.. (market:" , market ,", current price:" , price , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice)
         if (price >= targetPrice):
             if (predicted_close_price > price):
-                amount  = getBalance_unit('KRW')/3 #매수금액
+                amount  = getBalance_unit('KRW') #매수금액
                 if (amount > 10000):
                     ret = buyMarketPrice(market, amount)   #시장가 매수
                     print("buy! (market:" , market ,", current price:" , price 
                         , ", k:" , strategy2_VolatilityBreakout.k, "target price:", targetPrice
-                        , ", predicted:", predicted_close_price)
+                        , ", predicted:", predicted_close_price, ", amount", amount)
 strategy2_VolatilityBreakout.k  = getBestK()
 

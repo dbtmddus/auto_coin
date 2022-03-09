@@ -3,7 +3,7 @@ import pandas as pd
 from restAPI import getBalance,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick,getCandleDay
 
 def get_ror(k=0.5):
-    backtestSize = 20
+    backtestSize = 15
     json = getCandleDay("KRW-BTC", str(backtestSize)).json()
     df = pd.DataFrame(json)
 
