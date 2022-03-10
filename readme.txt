@@ -19,3 +19,10 @@ pip3 install schedule
 pip3 install pystan==2.19.1.1
 pip3 install convertdate
 pip3 install fbprophet
+
+
+개인 메모
+
+push완료된 git commit수정시
+git commit -amend
+git push --force https://github.com/dbtmddus/auto_coin master

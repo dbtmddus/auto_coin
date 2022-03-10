@@ -42,7 +42,7 @@ def getTokenQuery(query):
     authorize_token = 'Bearer {}'.format(jwt_token)
     headers = {"Authorization": authorize_token}
 
-def getBalance():
+def getBalance_currency():
     getToken()
     res = requests.get('https://api.upbit.com/v1/accounts', headers=headers)
     return res.json()
@@ -56,6 +56,23 @@ def getBalance_unit(unit):
         if (ticker['currency'] == unit):
             ret = ticker['balance']        
     return float(ret)
+
+def getBalance_market():
+    balance_list = getBalance_currency()
+    market_list = []
+    for item in balance_list:
+        currency = item['currency']
+        market = ""
+        unit = ""
+        if (currency != 'BTC') and (currency != 'KRW') and (currency != 'USDT'):
+            for unit_candi in units:
+                market_candi = unit_candi + '-' + currency
+                if market_candi in dic:
+                    market = market_candi
+                    unit = unit_candi
+                    market_list.append(market)
+                    break
+    return market_list
 
 def getInfo(ticker_list):
     getToken()
@@ -110,7 +127,7 @@ def sellMarketPrice(market, volume):
     #volume == None 일 때 잔고 전체로 설정
     balance_volume = 0
     ticker = market.split('-')[1]
-    balance = getBalance()
+    balance = getBalance_currency()
     for item in balance:
         if( item['currency'] == ticker ):
             balance_volume = float(item['balance'])
@@ -136,7 +153,7 @@ def sellMarketPrice(market, volume):
         return None
         
 def sellAll():
-    balance_list = getBalance()
+    balance_list = getBalance_currency()
     for item in balance_list:
         if (item['currency'] != 'KRW') and (item['currency'] != 'BTC') and (item['currency'] != 'USDT'):
             for unit in units:
@@ -144,7 +161,7 @@ def sellAll():
                 sellMarketPrice(market,None)
 
 def sellAll_BTC_USDT():
-    balance_list = getBalance()
+    balance_list = getBalance_currency()
     for item in balance_list:
         if item['currency'] != 'KRW' :
             for unit in units:

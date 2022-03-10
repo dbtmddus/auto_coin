@@ -6,28 +6,10 @@ from fbprophet import Prophet
 from restAPI import *
 from backtesting import *
 
-units = ['BTC', 'KRW', 'USDT']
 dic = getAllPrice()
 preDic = dic
-
-def getBalance_market():
-    balance_list = getBalance()
-    market_list = []
-    for item in balance_list:
-        currency = item['currency']
-        market = ""
-        unit = ""
-        if (currency != 'BTC') and (currency != 'KRW') and (currency != 'USDT'):
-            for unit_candi in units:
-                market_candi = unit_candi + '-' + currency
-                if market_candi in dic:
-                    market = market_candi
-                    unit = unit_candi
-                    market_list.append(market)
-                    break
-    return market_list
-
 predicted_close_price = 0
+
 def predict_price(ticker):
     """Prophet으로 당일 종가 가격 예측"""
     global predicted_close_price
@@ -57,7 +39,7 @@ def predict_price(ticker):
     predicted_close_price = closeValue
     print ('predict : ', predicted_close_price)
 
-def checkSoaringBuy():
+def checkSoaringBuy( threshold ):
     for market in dic:
         if market in preDic:
             prePrice = preDic[market]
@@ -65,7 +47,7 @@ def checkSoaringBuy():
             diff = ((price-prePrice)/price)*100
             unit = market.split('-')[0] 
             #print("buy check.. (market:" , market ,", " , prePrice , "->" , price , " " , diff , "%")
-            if diff > 8:
+            if diff > threshold:
                 amount  = getBalance_unit(unit)/3 #매수금액
                 oneTick = getOneTick(market)
                 if ((price-prePrice) > oneTick*2.1):
@@ -90,12 +72,12 @@ def checkSoaringSell():
                     print("sell! (market:" , market ,", " , prePrice , "->" , price , " " , diff , "%)")
 
 def strategy1_Soaring():
-    checkSoaringBuy()
+    checkSoaringBuy(8)
     checkSoaringSell()
 
 def strategy2_VolatilityBreakout():
     t = datetime.datetime.now()
-    if (t.hour == 9) and (t.minute == 0):   # Sell
+    if (t.hour == 9) and (t.minute == 00):   # Sell
         print ('Sell all.  time:', t.hour, "/", t.minute)
         sellAll_BTC_USDT()
         time.sleep(60)

@@ -2,7 +2,7 @@ import schedule
 import time
 import stretagy as st
 
-print("잔고 :", st.getBalance())
+print("잔고 :", st.getBalance_currency())
 st.predict_price("KRW-BTC")
 schedule.every(10).minutes.do(lambda: st.predict_price("KRW-BTC"))
 
