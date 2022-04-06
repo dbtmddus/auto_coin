@@ -13,11 +13,13 @@ while True:
         schedule.run_pending()
 
         #select stretagy
-        #st.strategy1_Soaring()
-        st.strategy2_VolatilityBreakout()
+        st.strategy1_Soaring()
+        #st.strategy2_VolatilityBreakout()
 
         #finish work
         st.preDic = st.dic
+        #print("ysy pre : ", st.preDic)
+        #print("ysy cur : ", st.dic)
         time.sleep(0.3)
     except Exception as e:
         print(e)

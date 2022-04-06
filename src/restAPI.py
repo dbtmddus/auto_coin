@@ -4,6 +4,7 @@ import hashlib
 from urllib.parse import urlencode
 import requests
 import inspect
+import time
 
 access_key = 'kZEmXq2ZhtYtifIxGuJquVxASfvvJv88sJwXQJxD'
 secret_key = 'wHumZzesU4S9PU6AhaDdPhZVuNMjmmcQa4bqCTmf'
@@ -60,6 +61,7 @@ def getBalance_unit(unit):
 def getBalance_market():
     balance_list = getBalance_currency()
     market_list = []
+    marketCoinList = getAllPrice()
     for item in balance_list:
         currency = item['currency']
         market = ""
@@ -67,10 +69,9 @@ def getBalance_market():
         if (currency != 'BTC') and (currency != 'KRW') and (currency != 'USDT'):
             for unit_candi in units:
                 market_candi = unit_candi + '-' + currency
-                if market_candi in dic:
-                    market = market_candi
+                if market_candi in marketCoinList:
                     unit = unit_candi
-                    market_list.append(market)
+                    market_list.append(market_candi)
                     break
     return market_list
 
@@ -120,6 +121,7 @@ def buyMarketPrice(market, price):
     print("매수주문", market, " / 매수금액:", price, " / code", res.status_code)
     if ( res.status_code >= 400 ):
         print (res.json())
+        return None
     return res
 
 def sellMarketPrice(market, volume):
@@ -148,7 +150,9 @@ def sellMarketPrice(market, volume):
         print("매도주문", market, " / 갯수", volume, " / code", res.status_code)
         if ( res.status_code >= 400 ):
             print (res.json())
-        return res
+            return None
+        else:
+            return res
     else:
         return None
         
@@ -159,6 +163,7 @@ def sellAll():
             for unit in units:
                 market = unit + '-' + item['currency']
                 sellMarketPrice(market,None)
+                time.sleep(0.5)  #Even invalid market requested, it make balance 0 temporary. So make few term to recovery
 
 def sellAll_BTC_USDT():
     balance_list = getBalance_currency()
@@ -167,6 +172,7 @@ def sellAll_BTC_USDT():
             for unit in units:
                 market = unit + '-' + item['currency']
                 sellMarketPrice(market,None)
+                time.sleep(0.5)  #Even invalid market requested, it make balance 0 temporary. So make few term to recovery
 
 def getAskBidBalance(market): #호가
     url = "https://api.upbit.com/v1/orderbook?markets="+market
@@ -200,6 +206,5 @@ def getCandleDay(market, count):
     return res
 
 if __name__ == "__main__":
-    #sellAll()
-    print(getCandleDay('KRW-BTC', '3').json())
+    sellAll_BTC_USDT()
     

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from restAPI import getBalance_currency,getBalance_unit,getInfo,getAllInfo,getAllPrice,buyMarketPrice,sellMarketPrice,getOneTick,getCandleDay
+from restAPI import *
 
 def get_ror(k=0.5):
     backtestSize = 15
