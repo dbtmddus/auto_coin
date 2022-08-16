@@ -17,7 +17,6 @@ def get_ror(k=0.5):
     ror = df['ror'].cumprod()[backtestSize-1]
     return ror
 
-
 def getBestK():
     bestK = 0
     bestRor = 0
@@ -33,4 +32,3 @@ def getBestK():
 
 if __name__ == "__main__":
     getBestK()
-    
