@@ -18,7 +18,11 @@ pip3 install pyupbit
 pip3 install schedule
 pip3 install pystan==2.19.1.1
 pip3 install convertdate
-pip3 install fbprophet
+//pip3 install fbprophet  -> pip3 install prophet 으로 변경됐음
+pip3 install pymongo
+pip3 install plotly
+
+*업비트에서 ip whitelist 설정 필요
 
 
 개인 메모

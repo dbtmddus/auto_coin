@@ -2,7 +2,7 @@ import time
 import pyupbit
 import datetime
 import pandas as pd
-from fbprophet import Prophet
+from prophet import Prophet
 from restAPI import *
 from backtesting import *
 from mongoDBHandler import *
@@ -50,7 +50,7 @@ def checkSoaringBuy( threshold ):
             unit = market.split('-')[0] 
             #print("buy check.. (market:" , market ,", " , prePrice , "->" , price , " " , diff , "%")
             if diff > threshold:
-                amount  = getBalance_unit(unit)/5 #매수금액
+                amount  = getBalance_unit(unit)/3 #매수금액
                 oneTick = getOneTick(market)
                 if ((price-prePrice) > oneTick*2.1):
                     ret = buyMarketPrice(market, amount)   #시장가 매수
