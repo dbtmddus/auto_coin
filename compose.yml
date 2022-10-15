@@ -3,14 +3,10 @@ version: '3.1'
 services:
   back-end:
     container_name: back-end
-    build:
-      context: ./back-end
-      dockerfile: Dockerfile
-    restart: 'no'
+    build: ./back-end
+    network_mode: host
 
   front-end:
     container_name: front-end
-    build:
-      context: ./front-end
-      dockerfile: Dockerfile
-    restart: 'no'
+    build: ./front-end
+    
